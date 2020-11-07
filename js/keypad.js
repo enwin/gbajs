@@ -16,8 +16,10 @@ function GameBoyAdvanceKeypad() {
 	this.GAMEPAD_DOWN = 13;
 	this.GAMEPAD_START = 9;
 	this.GAMEPAD_SELECT = 8;
-	this.GAMEPAD_A = 1;
-	this.GAMEPAD_B = 0;
+	// this.GAMEPAD_A = 1;
+	// this.GAMEPAD_B = 0;
+	this.GAMEPAD_A = 0;
+	this.GAMEPAD_B = 1;
 	this.GAMEPAD_L = 4;
 	this.GAMEPAD_R = 5;
 	this.GAMEPAD_THRESHOLD = 0.2;
