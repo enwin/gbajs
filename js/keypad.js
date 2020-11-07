@@ -92,69 +92,58 @@ GameBoyAdvanceKeypad.prototype.keyboardHandler = function(e) {
 
 GameBoyAdvanceKeypad.prototype.gamepadHandler = function(gamepad) {
 	var value = 0;
-	if (gamepad.buttons[this.GAMEPAD_LEFT] > this.GAMEPAD_THRESHOLD) {
+	if (gamepad.buttons[this.GAMEPAD_LEFT].value > this.GAMEPAD_THRESHOLD) {
 		value |= 1 << this.LEFT;
 	}
-	if (gamepad.buttons[this.GAMEPAD_UP] > this.GAMEPAD_THRESHOLD) {
+	if (gamepad.buttons[this.GAMEPAD_UP].value > this.GAMEPAD_THRESHOLD) {
 		value |= 1 << this.UP;
 	}
-	if (gamepad.buttons[this.GAMEPAD_RIGHT] > this.GAMEPAD_THRESHOLD) {
+	if (gamepad.buttons[this.GAMEPAD_RIGHT].value > this.GAMEPAD_THRESHOLD) {
 		value |= 1 << this.RIGHT;
 	}
-	if (gamepad.buttons[this.GAMEPAD_DOWN] > this.GAMEPAD_THRESHOLD) {
+	if (gamepad.buttons[this.GAMEPAD_DOWN].value > this.GAMEPAD_THRESHOLD) {
 		value |= 1 << this.DOWN;
 	}
-	if (gamepad.buttons[this.GAMEPAD_START] > this.GAMEPAD_THRESHOLD) {
+	if (gamepad.buttons[this.GAMEPAD_START].value > this.GAMEPAD_THRESHOLD) {
 		value |= 1 << this.START;
 	}
-	if (gamepad.buttons[this.GAMEPAD_SELECT] > this.GAMEPAD_THRESHOLD) {
+	if (gamepad.buttons[this.GAMEPAD_SELECT].value > this.GAMEPAD_THRESHOLD) {
 		value |= 1 << this.SELECT;
 	}
-	if (gamepad.buttons[this.GAMEPAD_A] > this.GAMEPAD_THRESHOLD) {
+	if (gamepad.buttons[this.GAMEPAD_A].value > this.GAMEPAD_THRESHOLD) {
 		value |= 1 << this.A;
 	}
-	if (gamepad.buttons[this.GAMEPAD_B] > this.GAMEPAD_THRESHOLD) {
+	if (gamepad.buttons[this.GAMEPAD_B].value > this.GAMEPAD_THRESHOLD) {
 		value |= 1 << this.B;
 	}
-	if (gamepad.buttons[this.GAMEPAD_L] > this.GAMEPAD_THRESHOLD) {
+	if (gamepad.buttons[this.GAMEPAD_L].value > this.GAMEPAD_THRESHOLD) {
 		value |= 1 << this.L;
 	}
-	if (gamepad.buttons[this.GAMEPAD_R] > this.GAMEPAD_THRESHOLD) {
+	if (gamepad.buttons[this.GAMEPAD_R].value > this.GAMEPAD_THRESHOLD) {
 		value |= 1 << this.R;
 	}
 
 	this.currentDown = ~value & 0x3FF;
 };
 
-GameBoyAdvanceKeypad.prototype.gamepadConnectHandler = function(gamepad) {
-	this.gamepads.push(gamepad);
+GameBoyAdvanceKeypad.prototype.gamepadConnectHandler = function(event) {
+	this.gamepads.push(event.gamepad);
 };
 
-GameBoyAdvanceKeypad.prototype.gamepadDisconnectHandler = function(gamepad) {
-	this.gamepads = self.gamepads.filter(function(other) { return other != gamepad });
+GameBoyAdvanceKeypad.prototype.gamepadDisconnectHandler = function(event) {
+	this.gamepads = self.gamepads.filter(function(other) { return other != event.gamepad });
 };
 
 GameBoyAdvanceKeypad.prototype.pollGamepads = function() {
-	var navigatorList = [];
-	if (navigator.webkitGetGamepads) {
-		navigatorList = navigator.webkitGetGamepads();
-	} else if (navigator.getGamepads) {
-		navigatorList = navigator.getGamepads();
+	if( !this.gamepads[0] ){
+		return;
 	}
 
-	// Let's all give a shout out to Chrome for making us get the gamepads EVERY FRAME
-	if (navigatorList.length) {
-		this.gamepads = [];
-	}
-	for (var i = 0; i < navigatorList.length; ++i) {
-		if (navigatorList[i]) {
-			this.gamepads.push(navigatorList[i]);
-		}
-	}
-	if (this.gamepads.length > 0) {
-		this.gamepadHandler(this.gamepads[0]);
-	}
+	var gamepad = navigator.getGamepads()[this.gamepads[0].index];
 
+	if( gamepad) {
+		this.gamepadHandler(gamepad)
+	}
 };
 
 GameBoyAdvanceKeypad.prototype.registerHandlers = function() {
@@ -162,10 +151,5 @@ GameBoyAdvanceKeypad.prototype.registerHandlers = function() {
 	window.addEventListener("keyup", this.keyboardHandler.bind(this), true);
 
 	window.addEventListener("gamepadconnected", this.gamepadConnectHandler.bind(this), true);
-	window.addEventListener("mozgamepadconnected", this.gamepadConnectHandler.bind(this), true);
-	window.addEventListener("webkitgamepadconnected", this.gamepadConnectHandler.bind(this), true);
-
 	window.addEventListener("gamepaddisconnected", this.gamepadDisconnectHandler.bind(this), true);
-	window.addEventListener("mozgamepaddisconnected", this.gamepadDisconnectHandler.bind(this), true);
-	window.addEventListener("webkitgamepaddisconnected", this.gamepadDisconnectHandler.bind(this), true);
 };
